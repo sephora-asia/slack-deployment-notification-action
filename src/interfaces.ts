@@ -12,6 +12,7 @@ export interface ChatPostMessageResult extends WebAPICallResult {
 export interface DeploymentOpts {
   appName: string
   envName?: string
+  refName?: string
 }
 
 export interface ChatMessage {

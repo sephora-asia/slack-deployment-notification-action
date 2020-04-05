@@ -1,12 +1,24 @@
 import {ChatMessage, DeploymentOpts} from './interfaces'
-import {SectionBlock} from '@slack/types'
+import {MrkdwnElement, PlainTextElement, SectionBlock} from '@slack/types'
 
 const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 
 export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
+  const fields: (PlainTextElement | MrkdwnElement)[] = [
+    {type: 'mrkdwn', text: '*Application*'},
+    {type: 'mrkdwn', text: '*Environment*'},
+    {type: 'plain_text', text: opts.appName},
+    {type: 'plain_text', text: opts.envName === undefined ? '' : opts.envName}
+  ]
+  if (opts.refName !== undefined && opts.refName.length > 0) {
+    fields.push({type: 'mrkdwn', text: ''}, {type: 'mrkdwn', text: ''})
+    fields.push({type: 'plain_text', text: opts.refName})
+  }
+
   const titleSection: SectionBlock = {
     type: 'section',
-    text: {type: 'mrkdwn', text: titleForDeployment(opts)} //,
+    text: {type: 'mrkdwn', text: titleForDeployment(opts)},
+    fields
     // accessory: {
     //   type: 'image',
     //   // eslint-disable-next-line @typescript-eslint/camelcase
