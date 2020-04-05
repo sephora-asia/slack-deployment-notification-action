@@ -12,9 +12,12 @@ async function run(): Promise<void> {
       conversationId = core.getInput('conversationId'),
       statusUpdate = core.getInput('statusUpdate'),
       appName = core.getInput('appName'),
+      envName = core.getInput('envName'),
+      refName = core.getInput('refName'),
+      deploymentOpts = {appName, envName, refName},
       messageForStatus = (status: string): ChatMessage => {
         if (status === '') {
-          return buildNewDeploymentMessage({appName})
+          return buildNewDeploymentMessage(deploymentOpts)
         } else {
           return {blocks: []}
         }
