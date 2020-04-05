@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import {WebClient} from '@slack/web-api'
-import {ChatMessage, ChatPostMessageResult} from './interfaces'
-import {buildNewDeploymentMessage, updateDeploymentMessage} from './builders'
+import {ChatPostMessageResult} from './interfaces'
+import {buildMessage} from './builders'
 
 async function run(): Promise<void> {
   try {
@@ -15,24 +15,17 @@ async function run(): Promise<void> {
       refName = core.getInput('refName'),
       messageId = core.getInput('messageId'),
       status = core.getInput('statusUpdate'),
-      deploymentOpts = {appName, envName, refName, messageId, status}
-
-    console.log(`appName: ${appName}`)
-    console.log(`envName: ${envName}`)
-    console.log(`refName: ${refName}`)
-    console.log(`messageId: ${messageId}`)
-    console.log(`status: ${status}`)
-    const messageForStatus = (statusName: string): ChatMessage => {
-      if (statusName === '') {
-        return buildNewDeploymentMessage(deploymentOpts)
-      } else if (statusName === 'success') {
-        return updateDeploymentMessage(deploymentOpts)
-      } else {
-        return {blocks: []}
+      statusMessage = core.getInput('statusMessage'),
+      deploymentOpts = {
+        appName,
+        envName,
+        refName,
+        messageId,
+        status,
+        statusMessage
       }
-    }
 
-    const message = messageForStatus(status)
+    const message = buildMessage(deploymentOpts)
 
     let result: ChatPostMessageResult | undefined
     if (messageId !== undefined && messageId.length > 0) {

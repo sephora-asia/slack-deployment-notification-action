@@ -15,6 +15,7 @@ export interface DeploymentOpts {
   refName?: string
   messageId?: string
   status?: string
+  statusMessage?: string
 }
 
 export interface ChatMessage {

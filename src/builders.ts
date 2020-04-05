@@ -11,7 +11,7 @@ import moment from 'moment-timezone'
 
 //const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 
-export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
+export function buildMessage(opts: DeploymentOpts): ChatMessage {
   const fields: (PlainTextElement | MrkdwnElement)[] = [
     {type: 'mrkdwn', text: '*Application*'},
     {type: 'mrkdwn', text: '*Environment*'},
@@ -27,13 +27,13 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     )
     fields.push(
       {type: 'plain_text', text: opts.refName},
-      {type: 'plain_text', text: 'Deploying...'}
+      {type: 'plain_text', text: statusMessage(opts)}
     )
   }
 
   const titleSection: SectionBlock = {
     type: 'section',
-    text: {type: 'mrkdwn', text: titleForDeployment(opts)},
+    text: {type: 'mrkdwn', text: titleMessage(opts)},
     fields
     // accessory: {
     //   type: 'image',
@@ -66,9 +66,7 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     elements: [
       {
         type: 'mrkdwn',
-        text: `Started at ${moment()
-          .tz('Asia/Singapore')
-          .format('HH:mm:ss Z')}`
+        text: contextMessage(opts)
       }
     ]
   }
@@ -79,20 +77,42 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   return message
 }
 
-export function updateDeploymentMessage(opts: DeploymentOpts): ChatMessage {
-  const sectionBlock: SectionBlock = {
-    type: 'section',
-    text: {type: 'plain_text', text: `Finished ${opts.appName}`}
-  }
-  return {
-    blocks: [sectionBlock]
+export function statusMessage(opts: DeploymentOpts): string {
+  if (opts.statusMessage !== undefined && opts.statusMessage.length > 0) {
+    return opts.statusMessage
+  } else if (opts.status === undefined || opts.status.length <= 0) {
+    return 'deploying...'
+  } else {
+    return opts.status
   }
 }
 
-export function titleForDeployment(opts: DeploymentOpts): string {
+export function titleMessage(opts: DeploymentOpts): string {
   if (opts.envName !== undefined && opts.envName.length > 0) {
     return `Starting *${opts.envName}* deployment for ${opts.appName}`
   } else {
     return `Starting deployment for ${opts.appName}`
   }
+}
+
+export function contextMessage(opts: DeploymentOpts): string {
+  if (initialDeployment(opts)) {
+    return `Started at ${formattedTime()}`
+  } else if (opts.status === 'success') {
+    return `:thumbsup: Completed at ${formattedTime()}`
+  } else if (opts.status === 'failed') {
+    return `:exclamation: Failed at ${formattedTime()}`
+  } else {
+    return ''
+  }
+}
+
+function formattedTime(): string {
+  return moment()
+    .tz('Asia/Singapore')
+    .format('HH:mm:ss Z')
+}
+
+function initialDeployment(opts: DeploymentOpts): boolean {
+  return (opts.status === undefined || opts.status.length <= 0)
 }

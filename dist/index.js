@@ -1362,24 +1362,15 @@ function run() {
             // Get the slack token as input and initialise the client
             const slackToken = core.getInput('slackToken');
             core.setSecret(slackToken);
-            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, messageId, status };
-            console.log(`appName: ${appName}`);
-            console.log(`envName: ${envName}`);
-            console.log(`refName: ${refName}`);
-            console.log(`messageId: ${messageId}`);
-            console.log(`status: ${status}`);
-            const messageForStatus = (statusName) => {
-                if (statusName === '') {
-                    return builders_1.buildNewDeploymentMessage(deploymentOpts);
-                }
-                else if (statusName === 'success') {
-                    return builders_1.updateDeploymentMessage(deploymentOpts);
-                }
-                else {
-                    return { blocks: [] };
-                }
+            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), statusMessage = core.getInput('statusMessage'), deploymentOpts = {
+                appName,
+                envName,
+                refName,
+                messageId,
+                status,
+                statusMessage
             };
-            const message = messageForStatus(status);
+            const message = builders_1.buildMessage(deploymentOpts);
             let result;
             if (messageId !== undefined && messageId.length > 0) {
                 result = (yield slackClient.chat.update({
@@ -2695,7 +2686,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_timezone_1 = __importDefault(__webpack_require__(717));
 //const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
-function buildNewDeploymentMessage(opts) {
+function buildMessage(opts) {
     const fields = [
         { type: 'mrkdwn', text: '*Application*' },
         { type: 'mrkdwn', text: '*Environment*' },
@@ -2706,11 +2697,11 @@ function buildNewDeploymentMessage(opts) {
     ];
     if (opts.refName !== undefined && opts.refName.length > 0) {
         fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: '*Status*' });
-        fields.push({ type: 'plain_text', text: opts.refName }, { type: 'plain_text', text: 'Deploying...' });
+        fields.push({ type: 'plain_text', text: opts.refName }, { type: 'plain_text', text: statusMessage(opts) });
     }
     const titleSection = {
         type: 'section',
-        text: { type: 'mrkdwn', text: titleForDeployment(opts) },
+        text: { type: 'mrkdwn', text: titleMessage(opts) },
         fields
         // accessory: {
         //   type: 'image',
@@ -2743,9 +2734,7 @@ function buildNewDeploymentMessage(opts) {
         elements: [
             {
                 type: 'mrkdwn',
-                text: `Started at ${moment_timezone_1.default()
-                    .tz('Asia/Singapore')
-                    .format('HH:mm:ss Z')}`
+                text: contextMessage(opts)
             }
         ]
     };
@@ -2754,18 +2743,20 @@ function buildNewDeploymentMessage(opts) {
     };
     return message;
 }
-exports.buildNewDeploymentMessage = buildNewDeploymentMessage;
-function updateDeploymentMessage(opts) {
-    const sectionBlock = {
-        type: 'section',
-        text: { type: 'plain_text', text: `Finished ${opts.appName}` }
-    };
-    return {
-        blocks: [sectionBlock]
-    };
+exports.buildMessage = buildMessage;
+function statusMessage(opts) {
+    if (opts.statusMessage !== undefined && opts.statusMessage.length > 0) {
+        return opts.statusMessage;
+    }
+    else if (opts.status === undefined || opts.status.length <= 0) {
+        return 'deploying...';
+    }
+    else {
+        return opts.status;
+    }
 }
-exports.updateDeploymentMessage = updateDeploymentMessage;
-function titleForDeployment(opts) {
+exports.statusMessage = statusMessage;
+function titleMessage(opts) {
     if (opts.envName !== undefined && opts.envName.length > 0) {
         return `Starting *${opts.envName}* deployment for ${opts.appName}`;
     }
@@ -2773,7 +2764,30 @@ function titleForDeployment(opts) {
         return `Starting deployment for ${opts.appName}`;
     }
 }
-exports.titleForDeployment = titleForDeployment;
+exports.titleMessage = titleMessage;
+function contextMessage(opts) {
+    if (initialDeployment(opts)) {
+        return `Started at ${formattedTime()}`;
+    }
+    else if (opts.status === 'success') {
+        return `:thumbsup: Completed at ${formattedTime()}`;
+    }
+    else if (opts.status === 'failed') {
+        return `:exclamation: Failed at ${formattedTime()}`;
+    }
+    else {
+        return '';
+    }
+}
+exports.contextMessage = contextMessage;
+function formattedTime() {
+    return moment_timezone_1.default()
+        .tz('Asia/Singapore')
+        .format('HH:mm:ss Z');
+}
+function initialDeployment(opts) {
+    return (opts.status === undefined || opts.status.length <= 0);
+}
 
 
 /***/ }),

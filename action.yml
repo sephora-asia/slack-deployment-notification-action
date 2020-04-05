@@ -27,6 +27,8 @@ inputs:
   statusMessage:
     description: "(optional) Additional status message to display for a status update"
     default: ''
+  # Message template Options
+
 outputs:
   messageId:
     description: 'The identifier of the message posted. Needs to be used as input for the status update'

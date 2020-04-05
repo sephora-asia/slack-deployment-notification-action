@@ -26,6 +26,7 @@ jobs:
         appName: 'Slack Deployment Notifcation Actions'
         envName: 'testing'
         refName: ${{ github.ref }}
+        statusMessage: 'Deploying... :loading:'
     - run: sleep 10
     - uses: ./
       with:
