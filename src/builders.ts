@@ -6,14 +6,14 @@ const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Aweso
 export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   const titleSection: SectionBlock = {
     type: 'section',
-    text: {type: 'mrkdwn', text: titleForDeployment(opts)},
-    accessory: {
-      type: 'image',
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      image_url: `${assetUrlPrefix}/solid/play-circle.svg`,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      alt_text: 'Starting'
-    }
+    text: {type: 'mrkdwn', text: titleForDeployment(opts)} //,
+    // accessory: {
+    //   type: 'image',
+    //   // eslint-disable-next-line @typescript-eslint/camelcase
+    //   image_url: `${assetUrlPrefix}/solid/play-circle.svg`,
+    //   // eslint-disable-next-line @typescript-eslint/camelcase
+    //   alt_text: 'Starting'
+    // }
   }
 
   const message: ChatMessage = {blocks: [titleSection]}
