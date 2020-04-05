@@ -2699,16 +2699,20 @@ function buildNewDeploymentMessage(opts) {
     const dividerSection = {
         type: 'divider'
     };
-    const jobRunUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID}`;
-    const actionsSection = {
-        type: 'actions',
-        elements: [
-            {
-                type: 'button',
-                text: { type: 'plain_text', text: 'View Job', emoji: true },
-                url: jobRunUrl
-            }
-        ]
+    const jobRunUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+    // const actionsSection: ActionsBlock = {
+    //   type: 'actions',
+    //   elements: [
+    //     {
+    //       type: 'button',
+    //       text: {type: 'plain_text', text: 'View Job', emoji: true},
+    //       url: jobRunUrl
+    //     }
+    //   ]
+    // }
+    const linksSection = {
+        type: 'section',
+        text: { type: 'mrkdwn', text: `(View Job)[${jobRunUrl}]` }
     };
     const contextSection = {
         type: 'context',
@@ -2722,7 +2726,7 @@ function buildNewDeploymentMessage(opts) {
         ]
     };
     const message = {
-        blocks: [titleSection, dividerSection, actionsSection, contextSection]
+        blocks: [titleSection, dividerSection, linksSection, contextSection]
     };
     return message;
 }

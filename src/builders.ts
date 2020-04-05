@@ -46,16 +46,20 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   const dividerSection: DividerBlock = {
     type: 'divider'
   }
-  const jobRunUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID}`
-  const actionsSection: ActionsBlock = {
-    type: 'actions',
-    elements: [
-      {
-        type: 'button',
-        text: {type: 'plain_text', text: 'View Job', emoji: true},
-        url: jobRunUrl
-      }
-    ]
+  const jobRunUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+  // const actionsSection: ActionsBlock = {
+  //   type: 'actions',
+  //   elements: [
+  //     {
+  //       type: 'button',
+  //       text: {type: 'plain_text', text: 'View Job', emoji: true},
+  //       url: jobRunUrl
+  //     }
+  //   ]
+  // }
+  const linksSection: SectionBlock = {
+    type: 'section',
+    text: {type: 'mrkdwn', text: `(View Job)[${jobRunUrl}]`}
   }
   const contextSection: ContextBlock = {
     type: 'context',
@@ -70,7 +74,7 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   }
 
   const message: ChatMessage = {
-    blocks: [titleSection, dividerSection, actionsSection, contextSection]
+    blocks: [titleSection, dividerSection, linksSection, contextSection]
   }
   return message
 }
