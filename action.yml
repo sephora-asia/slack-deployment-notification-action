@@ -1,10 +1,33 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'slack-deployment-notification'
+description: 'Notify a slack channel of the status of an ongoing deployment'
+author: 'Sephora Asia'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  slackToken:
+    description: 'Slack API token of the bot to use'
+    required: true
+  conversationId:
+    description: 'Channel or conversation ID to post your message to'
+    required: true
+  appName:
+    description: 'Name of the application you are deploying'
+    required: true
+    default: 'Application'
+  envName:
+    description: '(optional) Environment name you are deploying to'
+    default: ''
+  branchName:
+    description: '(optional) Name of the branch you are deploying'
+    default: ''
+  statusUpdate:
+    description: "(optional) Pass this value as either 'completed' or 'failed' to update your deployment status"
+    default: ''
+  statusMessage:
+    description: "(optional) Additional status message to display for a status update"
+    default: ''
+outputs:
+  messageId:
+    description: 'The identifier of the message posted. Needs to be used as input for the status update'
+
 runs:
   using: 'node12'
   main: 'dist/index.js'

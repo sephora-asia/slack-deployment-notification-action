@@ -19,5 +19,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: ./
-      with: 
-        milliseconds: 1000
+      with:
+        slackToken: ${{ secrets.SLACK_TOKEN }}
+        conversationId: 'C011LGX2HJL'
+        appName: 'Slack Deployment Notifcation Actions'
+        envName: 'testing'
+        branchName: ${{ github.ref }}

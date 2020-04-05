@@ -1,16 +1,32 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {WebClient} from '@slack/web-api'
+import {ChatMessage, ChatPostMessageResult} from './interfaces'
+import {buildNewDeploymentMessage} from './builders'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    // Get the slack token as input and initialise the client
+    const slackToken = core.getInput('slackToken')
+    core.setSecret(slackToken)
+    const slackClient: WebClient = new WebClient(slackToken),
+      conversationId = core.getInput('conversationId'),
+      statusUpdate = core.getInput('statusUpdate'),
+      appName = core.getInput('appName'),
+      messageForStatus = (status: string): ChatMessage => {
+        if (status === '') {
+          return buildNewDeploymentMessage({appName})
+        } else {
+          return {blocks: []}
+        }
+      },
+      message = messageForStatus(statusUpdate),
+      result = (await slackClient.chat.postMessage({
+        channel: conversationId,
+        text: '',
+        blocks: message.blocks
+      })) as ChatPostMessageResult
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    core.setOutput('messageId', result.ts)
   } catch (error) {
     core.setFailed(error.message)
   }
