@@ -1977,7 +1977,7 @@ function buildNewDeploymentMessage(opts) {
         { type: 'plain_text', text: ' ' }
     ];
     if (opts.refName !== undefined && opts.refName.length > 0) {
-        fields.push({ type: 'mrkdwn', text: ' ' }, { type: 'mrkdwn', text: ' ' });
+        fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: ' ' });
         fields.push({ type: 'plain_text', text: opts.refName });
     }
     const titleSection = {
@@ -1992,7 +1992,16 @@ function buildNewDeploymentMessage(opts) {
         //   alt_text: 'Starting'
         // }
     };
-    const message = { blocks: [titleSection] };
+    const dividerSection = {
+        type: 'divider'
+    };
+    const contextSection = {
+        type: 'context',
+        elements: [{ type: 'mrkdwn', text: new Date().toTimeString() }]
+    };
+    const message = {
+        blocks: [titleSection, dividerSection, contextSection]
+    };
     return message;
 }
 exports.buildNewDeploymentMessage = buildNewDeploymentMessage;

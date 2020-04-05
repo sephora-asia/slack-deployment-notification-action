@@ -1,6 +1,11 @@
-import * as core from '@actions/core'
 import {ChatMessage, DeploymentOpts} from './interfaces'
-import {MrkdwnElement, PlainTextElement, SectionBlock} from '@slack/types'
+import {
+  ContextBlock,
+  DividerBlock,
+  MrkdwnElement,
+  PlainTextElement,
+  SectionBlock
+} from '@slack/types'
 
 //const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 
@@ -14,7 +19,10 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     {type: 'plain_text', text: ' '}
   ]
   if (opts.refName !== undefined && opts.refName.length > 0) {
-    fields.push({type: 'mrkdwn', text: ' '}, {type: 'mrkdwn', text: ' '})
+    fields.push(
+      {type: 'mrkdwn', text: '*Reference*'},
+      {type: 'mrkdwn', text: ' '}
+    )
     fields.push({type: 'plain_text', text: opts.refName})
   }
 
@@ -30,8 +38,17 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     //   alt_text: 'Starting'
     // }
   }
+  const dividerSection: DividerBlock = {
+    type: 'divider'
+  }
+  const contextSection: ContextBlock = {
+    type: 'context',
+    elements: [{type: 'mrkdwn', text: new Date().toTimeString()}]
+  }
 
-  const message: ChatMessage = {blocks: [titleSection]}
+  const message: ChatMessage = {
+    blocks: [titleSection, dividerSection, contextSection]
+  }
   return message
 }
 
