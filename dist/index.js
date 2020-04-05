@@ -1362,7 +1362,13 @@ function run() {
             // Get the slack token as input and initialise the client
             const slackToken = core.getInput('slackToken');
             core.setSecret(slackToken);
-            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, messageId, status }, messageForStatus = (statusName) => {
+            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, messageId, status };
+            core.debug(`appName: ${appName}`);
+            core.debug(`envName: ${envName}`);
+            core.debug(`refName: ${refName}`);
+            core.debug(`messageId: ${messageId}`);
+            core.debug(`status: ${status}`);
+            const messageForStatus = (statusName) => {
                 if (statusName === '') {
                     return builders_1.buildNewDeploymentMessage(deploymentOpts);
                 }
@@ -1372,7 +1378,8 @@ function run() {
                 else {
                     return { blocks: [] };
                 }
-            }, message = messageForStatus(status);
+            };
+            const message = messageForStatus(status);
             let result;
             if (messageId !== undefined && messageId.length > 0) {
                 result = (yield slackClient.chat.update({
