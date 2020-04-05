@@ -59,7 +59,7 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   // }
   const linksSection: SectionBlock = {
     type: 'section',
-    text: {type: 'mrkdwn', text: `(View Job)[${jobRunUrl}]`}
+    text: {type: 'mrkdwn', text: `<${jobRunUrl}|*View Job*>`}
   }
   const contextSection: ContextBlock = {
     type: 'context',

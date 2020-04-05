@@ -2712,7 +2712,7 @@ function buildNewDeploymentMessage(opts) {
     // }
     const linksSection = {
         type: 'section',
-        text: { type: 'mrkdwn', text: `(View Job)[${jobRunUrl}]` }
+        text: { type: 'mrkdwn', text: `<${jobRunUrl}|*View Job*>` }
     };
     const contextSection = {
         type: 'context',
