@@ -1363,11 +1363,11 @@ function run() {
             const slackToken = core.getInput('slackToken');
             core.setSecret(slackToken);
             const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, messageId, status };
-            core.debug(`appName: ${appName}`);
-            core.debug(`envName: ${envName}`);
-            core.debug(`refName: ${refName}`);
-            core.debug(`messageId: ${messageId}`);
-            core.debug(`status: ${status}`);
+            console.log(`appName: ${appName}`);
+            console.log(`envName: ${envName}`);
+            console.log(`refName: ${refName}`);
+            console.log(`messageId: ${messageId}`);
+            console.log(`status: ${status}`);
             const messageForStatus = (statusName) => {
                 if (statusName === '') {
                     return builders_1.buildNewDeploymentMessage(deploymentOpts);

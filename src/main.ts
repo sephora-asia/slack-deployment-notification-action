@@ -17,11 +17,11 @@ async function run(): Promise<void> {
       status = core.getInput('statusUpdate'),
       deploymentOpts = {appName, envName, refName, messageId, status}
 
-    core.debug(`appName: ${appName}`)
-    core.debug(`envName: ${envName}`)
-    core.debug(`refName: ${refName}`)
-    core.debug(`messageId: ${messageId}`)
-    core.debug(`status: ${status}`)
+    console.log(`appName: ${appName}`)
+    console.log(`envName: ${envName}`)
+    console.log(`refName: ${refName}`)
+    console.log(`messageId: ${messageId}`)
+    console.log(`status: ${status}`)
     const messageForStatus = (statusName: string): ChatMessage => {
       if (statusName === '') {
         return buildNewDeploymentMessage(deploymentOpts)
