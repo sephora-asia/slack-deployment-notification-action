@@ -2681,8 +2681,8 @@ function buildNewDeploymentMessage(opts) {
         { type: 'plain_text', text: ' ' }
     ];
     if (opts.refName !== undefined && opts.refName.length > 0) {
-        fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: ' ' });
-        fields.push({ type: 'plain_text', text: opts.refName });
+        fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: '*Status*' });
+        fields.push({ type: 'plain_text', text: opts.refName }, { type: 'plain_text', text: 'Deploying...' });
     }
     const titleSection = {
         type: 'section',
@@ -2699,6 +2699,17 @@ function buildNewDeploymentMessage(opts) {
     const dividerSection = {
         type: 'divider'
     };
+    const jobRunUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID}`;
+    const actionsSection = {
+        type: 'actions',
+        elements: [
+            {
+                type: 'button',
+                text: { type: 'plain_text', text: 'View Job', emoji: true },
+                url: jobRunUrl
+            }
+        ]
+    };
     const contextSection = {
         type: 'context',
         elements: [
@@ -2711,7 +2722,7 @@ function buildNewDeploymentMessage(opts) {
         ]
     };
     const message = {
-        blocks: [titleSection, dividerSection, contextSection]
+        blocks: [titleSection, dividerSection, actionsSection, contextSection]
     };
     return message;
 }

@@ -1,5 +1,6 @@
 import {ChatMessage, DeploymentOpts} from './interfaces'
 import {
+  ActionsBlock,
   ContextBlock,
   DividerBlock,
   MrkdwnElement,
@@ -22,9 +23,12 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   if (opts.refName !== undefined && opts.refName.length > 0) {
     fields.push(
       {type: 'mrkdwn', text: '*Reference*'},
-      {type: 'mrkdwn', text: ' '}
+      {type: 'mrkdwn', text: '*Status*'}
     )
-    fields.push({type: 'plain_text', text: opts.refName})
+    fields.push(
+      {type: 'plain_text', text: opts.refName},
+      {type: 'plain_text', text: 'Deploying...'}
+    )
   }
 
   const titleSection: SectionBlock = {
@@ -42,6 +46,17 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   const dividerSection: DividerBlock = {
     type: 'divider'
   }
+  const jobRunUrl = `https://github.com/${process.env.GITHUB_REPOSITORY}/runs/${process.env.GITHUB_RUN_ID}`
+  const actionsSection: ActionsBlock = {
+    type: 'actions',
+    elements: [
+      {
+        type: 'button',
+        text: {type: 'plain_text', text: 'View Job', emoji: true},
+        url: jobRunUrl
+      }
+    ]
+  }
   const contextSection: ContextBlock = {
     type: 'context',
     elements: [
@@ -55,7 +70,7 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   }
 
   const message: ChatMessage = {
-    blocks: [titleSection, dividerSection, contextSection]
+    blocks: [titleSection, dividerSection, actionsSection, contextSection]
   }
   return message
 }
