@@ -25,3 +25,10 @@ jobs:
         appName: 'Slack Deployment Notifcation Actions'
         envName: 'testing'
         refName: ${{ github.ref }}
+    - run: sleep 10
+    - uses: ./
+      with:
+        slackToken: ${{ secrets.SLACK_TOKEN }}
+        conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
+
+        status:

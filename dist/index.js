@@ -1362,9 +1362,12 @@ function run() {
             // Get the slack token as input and initialise the client
             const slackToken = core.getInput('slackToken');
             core.setSecret(slackToken);
-            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, status }, messageForStatus = (statusName) => {
-                if (statusName === '') {
+            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, messageId, status }, messageForStatus = (statusName) => {
+                if (statusName === '' || messageId === '') {
                     return builders_1.buildNewDeploymentMessage(deploymentOpts);
+                }
+                else if (statusName === 'success') {
+                    return builders_1.updateDeploymentMessage(deploymentOpts);
                 }
                 else {
                     return { blocks: [] };
@@ -2721,7 +2724,7 @@ function buildNewDeploymentMessage(opts) {
                 type: 'mrkdwn',
                 text: `Started at ${moment_timezone_1.default()
                     .tz('Asia/Singapore')
-                    .format('HH:mm:ss z')}`
+                    .format('HH:mm:ss Z')}`
             }
         ]
     };
@@ -2731,6 +2734,16 @@ function buildNewDeploymentMessage(opts) {
     return message;
 }
 exports.buildNewDeploymentMessage = buildNewDeploymentMessage;
+function updateDeploymentMessage(opts) {
+    const sectionBlock = {
+        type: 'section',
+        text: { type: 'plain_text', text: `Finished ${opts.appName}` }
+    };
+    return {
+        blocks: [sectionBlock]
+    };
+}
+exports.updateDeploymentMessage = updateDeploymentMessage;
 function titleForDeployment(opts) {
     if (opts.envName !== undefined && opts.envName.length > 0) {
         return `Starting *${opts.envName}* deployment for ${opts.appName}`;

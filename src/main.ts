@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import {WebClient} from '@slack/web-api'
 import {ChatMessage, ChatPostMessageResult} from './interfaces'
-import {buildNewDeploymentMessage} from './builders'
+import {buildNewDeploymentMessage, updateDeploymentMessage} from './builders'
 
 async function run(): Promise<void> {
   try {
@@ -13,11 +13,14 @@ async function run(): Promise<void> {
       appName = core.getInput('appName'),
       envName = core.getInput('envName'),
       refName = core.getInput('refName'),
+      messageId = core.getInput('messageId'),
       status = core.getInput('statusUpdate'),
-      deploymentOpts = {appName, envName, refName, status},
+      deploymentOpts = {appName, envName, refName, messageId, status},
       messageForStatus = (statusName: string): ChatMessage => {
-        if (statusName === '') {
+        if (statusName === '' || messageId === '') {
           return buildNewDeploymentMessage(deploymentOpts)
+        } else if (statusName === 'success') {
+          return updateDeploymentMessage(deploymentOpts)
         } else {
           return {blocks: []}
         }

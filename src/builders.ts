@@ -1,6 +1,6 @@
 import {ChatMessage, DeploymentOpts} from './interfaces'
 import {
-  ActionsBlock,
+  //ActionsBlock,
   ContextBlock,
   DividerBlock,
   MrkdwnElement,
@@ -68,7 +68,7 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
         type: 'mrkdwn',
         text: `Started at ${moment()
           .tz('Asia/Singapore')
-          .format('HH:mm:ss z')}`
+          .format('HH:mm:ss Z')}`
       }
     ]
   }
@@ -77,6 +77,16 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     blocks: [titleSection, dividerSection, linksSection, contextSection]
   }
   return message
+}
+
+export function updateDeploymentMessage(opts: DeploymentOpts): ChatMessage {
+  const sectionBlock: SectionBlock = {
+    type: 'section',
+    text: {type: 'plain_text', text: `Finished ${opts.appName}`}
+  }
+  return {
+    blocks: [sectionBlock]
+  }
 }
 
 export function titleForDeployment(opts: DeploymentOpts): string {
