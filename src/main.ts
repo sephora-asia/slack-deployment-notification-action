@@ -17,7 +17,7 @@ async function run(): Promise<void> {
       status = core.getInput('statusUpdate'),
       deploymentOpts = {appName, envName, refName, messageId, status},
       messageForStatus = (statusName: string): ChatMessage => {
-        if (statusName === '' || messageId === '') {
+        if (statusName === '') {
           return buildNewDeploymentMessage(deploymentOpts)
         } else if (statusName === 'success') {
           return updateDeploymentMessage(deploymentOpts)
@@ -25,12 +25,25 @@ async function run(): Promise<void> {
           return {blocks: []}
         }
       },
-      message = messageForStatus(status),
+      message = messageForStatus(status)
+
+    let result: ChatPostMessageResult | undefined
+    if (messageId !== undefined && messageId.length > 0) {
+      result = (await slackClient.chat.update({
+        channel: conversationId,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        as_user: true,
+        ts: messageId,
+        text: '',
+        blocks: message.blocks
+      })) as ChatPostMessageResult
+    } else {
       result = (await slackClient.chat.postMessage({
         channel: conversationId,
         text: '',
         blocks: message.blocks
       })) as ChatPostMessageResult
+    }
 
     core.setOutput('messageId', result.ts)
   } catch (error) {

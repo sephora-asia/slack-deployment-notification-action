@@ -1363,7 +1363,7 @@ function run() {
             const slackToken = core.getInput('slackToken');
             core.setSecret(slackToken);
             const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, messageId, status }, messageForStatus = (statusName) => {
-                if (statusName === '' || messageId === '') {
+                if (statusName === '') {
                     return builders_1.buildNewDeploymentMessage(deploymentOpts);
                 }
                 else if (statusName === 'success') {
@@ -1372,11 +1372,25 @@ function run() {
                 else {
                     return { blocks: [] };
                 }
-            }, message = messageForStatus(status), result = (yield slackClient.chat.postMessage({
-                channel: conversationId,
-                text: '',
-                blocks: message.blocks
-            }));
+            }, message = messageForStatus(status);
+            let result;
+            if (messageId !== undefined && messageId.length > 0) {
+                result = (yield slackClient.chat.update({
+                    channel: conversationId,
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    as_user: true,
+                    ts: messageId,
+                    text: '',
+                    blocks: message.blocks
+                }));
+            }
+            else {
+                result = (yield slackClient.chat.postMessage({
+                    channel: conversationId,
+                    text: '',
+                    blocks: message.blocks
+                }));
+            }
             core.setOutput('messageId', result.ts);
         }
         catch (error) {

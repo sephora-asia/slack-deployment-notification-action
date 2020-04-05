@@ -19,6 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - uses: ./
+      id: start-deploy-notif
       with:
         slackToken: ${{ secrets.SLACK_TOKEN }}
         conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
@@ -30,5 +31,8 @@ jobs:
       with:
         slackToken: ${{ secrets.SLACK_TOKEN }}
         conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
-
-        status:
+        messageId: ${{ steps.start-deploy-notif.outputs.messageId }}
+        appName: 'Application'
+        envName: 'testing'
+        refName: ${{ github.ref }}
+        status: 'success'
