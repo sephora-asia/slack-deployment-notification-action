@@ -6,6 +6,7 @@ import {
   PlainTextElement,
   SectionBlock
 } from '@slack/types'
+import moment from 'moment-timezone'
 
 //const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 
@@ -43,7 +44,14 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   }
   const contextSection: ContextBlock = {
     type: 'context',
-    elements: [{type: 'mrkdwn', text: new Date().toTimeString()}]
+    elements: [
+      {
+        type: 'mrkdwn',
+        text: `Started at ${moment()
+          .tz('Asia/Singapore')
+          .format('HH:mm:ss z')}`
+      }
+    ]
   }
 
   const message: ChatMessage = {
