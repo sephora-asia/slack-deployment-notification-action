@@ -35,4 +35,4 @@ jobs:
         appName: 'Application'
         envName: 'testing'
         refName: ${{ github.ref }}
-        status: 'success'
+        statusUpdate: 'success'
