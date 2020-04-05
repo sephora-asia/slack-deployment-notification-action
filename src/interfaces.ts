@@ -13,6 +13,7 @@ export interface DeploymentOpts {
   appName: string
   envName?: string
   refName?: string
+  status?: string
 }
 
 export interface ChatMessage {

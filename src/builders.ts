@@ -1,7 +1,8 @@
+import * as core from '@actions/core'
 import {ChatMessage, DeploymentOpts} from './interfaces'
 import {MrkdwnElement, PlainTextElement, SectionBlock} from '@slack/types'
 
-const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
+//const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 
 export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   const fields: (PlainTextElement | MrkdwnElement)[] = [

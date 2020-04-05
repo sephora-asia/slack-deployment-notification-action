@@ -10,19 +10,19 @@ async function run(): Promise<void> {
     core.setSecret(slackToken)
     const slackClient: WebClient = new WebClient(slackToken),
       conversationId = core.getInput('conversationId'),
-      statusUpdate = core.getInput('statusUpdate'),
       appName = core.getInput('appName'),
       envName = core.getInput('envName'),
       refName = core.getInput('refName'),
-      deploymentOpts = {appName, envName, refName},
-      messageForStatus = (status: string): ChatMessage => {
-        if (status === '') {
+      status = core.getInput('statusUpdate'),
+      deploymentOpts = {appName, envName, refName, status},
+      messageForStatus = (statusName: string): ChatMessage => {
+        if (statusName === '') {
           return buildNewDeploymentMessage(deploymentOpts)
         } else {
           return {blocks: []}
         }
       },
-      message = messageForStatus(statusUpdate),
+      message = messageForStatus(status),
       result = (await slackClient.chat.postMessage({
         channel: conversationId,
         text: '',

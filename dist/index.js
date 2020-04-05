@@ -1360,14 +1360,14 @@ function run() {
             // Get the slack token as input and initialise the client
             const slackToken = core.getInput('slackToken');
             core.setSecret(slackToken);
-            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), statusUpdate = core.getInput('statusUpdate'), appName = core.getInput('appName'), messageForStatus = (status) => {
-                if (status === '') {
-                    return builders_1.buildNewDeploymentMessage({ appName });
+            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), status = core.getInput('statusUpdate'), deploymentOpts = { appName, envName, refName, status }, messageForStatus = (statusName) => {
+                if (statusName === '') {
+                    return builders_1.buildNewDeploymentMessage(deploymentOpts);
                 }
                 else {
                     return { blocks: [] };
                 }
-            }, message = messageForStatus(statusUpdate), result = (yield slackClient.chat.postMessage({
+            }, message = messageForStatus(status), result = (yield slackClient.chat.postMessage({
                 channel: conversationId,
                 text: '',
                 blocks: message.blocks
@@ -1961,16 +1961,35 @@ exports.default = policies;
 /***/ }),
 
 /***/ 266:
-/***/ (function(__unusedmodule, exports) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`;
+const core = __importStar(__webpack_require__(470));
+//const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 function buildNewDeploymentMessage(opts) {
+    const fields = [
+        { type: 'mrkdwn', text: '*Application*' },
+        { type: 'mrkdwn', text: '*Environment*' },
+        { type: 'plain_text', text: opts.appName },
+        { type: 'plain_text', text: opts.envName === undefined ? '' : opts.envName }
+    ];
+    if (opts.refName !== undefined && opts.refName.length > 0) {
+        fields.push({ type: 'mrkdwn', text: '' }, { type: 'mrkdwn', text: '' });
+        fields.push({ type: 'plain_text', text: opts.refName });
+    }
     const titleSection = {
         type: 'section',
-        text: { type: 'mrkdwn', text: titleForDeployment(opts) } //,
+        text: { type: 'mrkdwn', text: titleForDeployment(opts) },
+        fields
         // accessory: {
         //   type: 'image',
         //   // eslint-disable-next-line @typescript-eslint/camelcase
@@ -1984,6 +2003,9 @@ function buildNewDeploymentMessage(opts) {
 }
 exports.buildNewDeploymentMessage = buildNewDeploymentMessage;
 function titleForDeployment(opts) {
+    core.debug(`titleForDeployment with ${opts}`);
+    core.debug(`opts.envName: ${opts.envName}`);
+    core.debug(`opts.appName: ${opts.appName}`);
     if (opts.envName !== undefined && opts.envName.length > 0) {
         return `Starting *${opts.envName}* deployment for ${opts.appName}`;
     }

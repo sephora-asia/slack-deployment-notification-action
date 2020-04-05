@@ -21,7 +21,7 @@ jobs:
     - uses: ./
       with:
         slackToken: ${{ secrets.SLACK_TOKEN }}
-        conversationId: 'C011LGX2HJL'
+        conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
         appName: 'Slack Deployment Notifcation Actions'
         envName: 'testing'
         refName: ${{ github.ref }}
