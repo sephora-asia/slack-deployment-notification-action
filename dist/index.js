@@ -1966,9 +1966,7 @@ exports.default = policies;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const orgName = 'sephora-asia';
-const repoName = 'slack-deployment-notification-action';
-const assetUrlPrefix = `https://raw.githubusercontent.com/${orgName}/${repoName}/master/assets`;
+const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`;
 function buildNewDeploymentMessage(opts) {
     const titleSection = {
         type: 'section',
@@ -1976,7 +1974,7 @@ function buildNewDeploymentMessage(opts) {
         accessory: {
             type: 'image',
             // eslint-disable-next-line @typescript-eslint/camelcase
-            image_url: `${assetUrlPrefix}/play-circle.svg`,
+            image_url: `${assetUrlPrefix}/solid/play-circle.svg`,
             // eslint-disable-next-line @typescript-eslint/camelcase
             alt_text: 'Starting'
         }

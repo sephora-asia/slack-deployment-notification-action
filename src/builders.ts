@@ -1,9 +1,7 @@
 import {ChatMessage, DeploymentOpts} from './interfaces'
 import {SectionBlock} from '@slack/types'
 
-const orgName = 'sephora-asia'
-const repoName = 'slack-deployment-notification-action'
-const assetUrlPrefix = `https://raw.githubusercontent.com/${orgName}/${repoName}/master/assets`
+const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 
 export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
   const titleSection: SectionBlock = {
@@ -12,7 +10,7 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     accessory: {
       type: 'image',
       // eslint-disable-next-line @typescript-eslint/camelcase
-      image_url: `${assetUrlPrefix}/play-circle.svg`,
+      image_url: `${assetUrlPrefix}/solid/play-circle.svg`,
       // eslint-disable-next-line @typescript-eslint/camelcase
       alt_text: 'Starting'
     }
