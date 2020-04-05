@@ -9,10 +9,12 @@ export function buildNewDeploymentMessage(opts: DeploymentOpts): ChatMessage {
     {type: 'mrkdwn', text: '*Application*'},
     {type: 'mrkdwn', text: '*Environment*'},
     {type: 'plain_text', text: opts.appName},
-    {type: 'plain_text', text: opts.envName === undefined ? '' : opts.envName}
+    {type: 'plain_text', text: `${opts.envName} `},
+    {type: 'plain_text', text: ' '},
+    {type: 'plain_text', text: ' '}
   ]
   if (opts.refName !== undefined && opts.refName.length > 0) {
-    fields.push({type: 'mrkdwn', text: ''}, {type: 'mrkdwn', text: ''})
+    fields.push({type: 'mrkdwn', text: ' '}, {type: 'mrkdwn', text: ' '})
     fields.push({type: 'plain_text', text: opts.refName})
   }
 

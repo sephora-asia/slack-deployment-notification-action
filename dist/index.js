@@ -1961,29 +1961,23 @@ exports.default = policies;
 /***/ }),
 
 /***/ 266:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports) {
 
 "use strict";
 
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
 //const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
 function buildNewDeploymentMessage(opts) {
     const fields = [
         { type: 'mrkdwn', text: '*Application*' },
         { type: 'mrkdwn', text: '*Environment*' },
         { type: 'plain_text', text: opts.appName },
-        { type: 'plain_text', text: opts.envName === undefined ? '' : opts.envName }
+        { type: 'plain_text', text: `${opts.envName} ` },
+        { type: 'plain_text', text: ' ' },
+        { type: 'plain_text', text: ' ' }
     ];
     if (opts.refName !== undefined && opts.refName.length > 0) {
-        fields.push({ type: 'mrkdwn', text: '' }, { type: 'mrkdwn', text: '' });
+        fields.push({ type: 'mrkdwn', text: ' ' }, { type: 'mrkdwn', text: ' ' });
         fields.push({ type: 'plain_text', text: opts.refName });
     }
     const titleSection = {
@@ -2003,9 +1997,6 @@ function buildNewDeploymentMessage(opts) {
 }
 exports.buildNewDeploymentMessage = buildNewDeploymentMessage;
 function titleForDeployment(opts) {
-    core.debug(`titleForDeployment with ${opts}`);
-    core.debug(`opts.envName: ${opts.envName}`);
-    core.debug(`opts.appName: ${opts.appName}`);
     if (opts.envName !== undefined && opts.envName.length > 0) {
         return `Starting *${opts.envName}* deployment for ${opts.appName}`;
     }
