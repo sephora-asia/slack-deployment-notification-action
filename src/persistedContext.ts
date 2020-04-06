@@ -28,19 +28,18 @@ export class PersistedContext {
     persist: boolean = true,
     secret: boolean = false
   ): void {
-    if (
-      core.getInput(varName) !== undefined &&
-      core.getInput(varName).length > 0
-    ) {
+    if (core.getInput(varName).length > 0) {
       this[varName] = core.getInput(varName)
     } else {
-      this[varName] = process.env[this.getEnvVarForProperty(varName)] as string
+      this[varName] = process.env[this.getEnvVarForProperty(varName)] || ''
     }
-    if (secret) {
-      core.setSecret(this[varName])
-    }
-    if (persist) {
-      core.exportVariable(this.getEnvVarForProperty(varName), this[varName])
+    if (this[varName].length > 0) {
+      if (secret) {
+        core.setSecret(this[varName])
+      }
+      if (persist) {
+        core.exportVariable(this.getEnvVarForProperty(varName), this[varName])
+      }
     }
   }
 
