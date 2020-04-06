@@ -1355,6 +1355,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const web_api_1 = __webpack_require__(114);
+const interfaces_1 = __webpack_require__(733);
 const builders_1 = __webpack_require__(266);
 const persistedContext_1 = __webpack_require__(296);
 function run() {
@@ -1377,7 +1378,7 @@ function run() {
             else {
                 result = (yield slackClient.chat.postMessage(Object.assign({}, baseOptions)));
             }
-            context.setEnvVarForProperty(persistedContext_1.ContextElements.messageId, result.ts);
+            context.setEnvVarForProperty(interfaces_1.ContextElements.messageId, result.ts);
             core.setOutput('messageId', result.ts);
         }
         catch (error) {
@@ -2673,19 +2674,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const interfaces_1 = __webpack_require__(733);
 const moment_timezone_1 = __importDefault(__webpack_require__(717));
 function assetUrlFor(context) {
-    if (context.status === 'success') {
+    if (context.status === interfaces_1.Status.success) {
         return 'https://user-images.githubusercontent.com/35408/78554389-a54f5780-783d-11ea-9657-15dc61ca8262.png';
     }
-    else if (context.status === 'failure') {
+    else if (context.status === interfaces_1.Status.failed) {
         return 'https://user-images.githubusercontent.com/35408/78554400-a8e2de80-783d-11ea-9f81-17fa426370b5.png';
     }
-    else if (isInitialDeployment(context)) {
+    else if (context.status === interfaces_1.Status.started) {
         return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png';
     }
     else {
-        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+        return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif';
     }
 }
 exports.assetUrlFor = assetUrlFor;
@@ -2693,7 +2695,7 @@ function statusMessageFor(context) {
     if (context.statusMessage.length > 0) {
         return context.statusMessage;
     }
-    else if (isInitialDeployment(context)) {
+    else if (context.status === interfaces_1.Status.started) {
         return 'deploying...';
     }
     else {
@@ -2711,13 +2713,13 @@ function titleMessageFor(context) {
 }
 exports.titleMessageFor = titleMessageFor;
 function contextMessageFor(context) {
-    if (isInitialDeployment(context)) {
+    if (context.status === interfaces_1.Status.started) {
         return `Started at ${formattedTime()}`;
     }
-    else if (context.status === 'success') {
+    else if (context.status === interfaces_1.Status.success) {
         return `:thumbsup: Completed at ${formattedTime()}`;
     }
-    else if (context.status === 'failed') {
+    else if (context.status === interfaces_1.Status.failed) {
         return `:exclamation: Failed at ${formattedTime()}`;
     }
     else {
@@ -2730,9 +2732,6 @@ function formattedTime() {
         .tz('Asia/Singapore')
         .format('HH:mm:ss Z');
 }
-function isInitialDeployment(context) {
-    return context.status.length <= 0;
-}
 function buildMessage(context) {
     const fields = [
         { type: 'mrkdwn', text: '*Application*' },
@@ -2742,7 +2741,7 @@ function buildMessage(context) {
         { type: 'plain_text', text: ' ' },
         { type: 'plain_text', text: ' ' }
     ];
-    if (context.refName !== undefined && context.refName.length > 0) {
+    if (context.refName.length > 0) {
         fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: '*Status*' });
         fields.push({ type: 'plain_text', text: `${context.refName}` }, { type: 'plain_text', text: statusMessageFor(context) });
     }
@@ -2869,6 +2868,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
+const interfaces_1 = __webpack_require__(733);
 class PersistedContext {
     /**
      * Hydrate the context from the environment
@@ -2882,14 +2882,14 @@ class PersistedContext {
         this.messageId = '';
         this.status = '';
         this.statusMessage = '';
-        this.getAndSetVarFromContext(ContextElements.slackToken, true, true);
-        this.getAndSetVarFromContext(ContextElements.conversationId);
-        this.getAndSetVarFromContext(ContextElements.appName);
-        this.getAndSetVarFromContext(ContextElements.envName);
-        this.getAndSetVarFromContext(ContextElements.refName);
-        this.getAndSetVarFromContext(ContextElements.messageId);
-        this.getAndSetVarFromContext(ContextElements.status, false);
-        this.getAndSetVarFromContext(ContextElements.statusMessage, false);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.slackToken, true, true);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.conversationId);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.appName);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.envName);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.refName);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.messageId);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.status, false);
+        this.getAndSetVarFromContext(interfaces_1.ContextElements.statusMessage, false);
     }
     getAndSetVarFromContext(varName, persist = true, secret = false) {
         if (core.getInput(varName).length > 0) {
@@ -2915,17 +2915,6 @@ class PersistedContext {
     }
 }
 exports.PersistedContext = PersistedContext;
-var ContextElements;
-(function (ContextElements) {
-    ContextElements["slackToken"] = "slackToken";
-    ContextElements["conversationId"] = "conversationId";
-    ContextElements["appName"] = "appName";
-    ContextElements["envName"] = "envName";
-    ContextElements["refName"] = "refName";
-    ContextElements["messageId"] = "messageId";
-    ContextElements["status"] = "status";
-    ContextElements["statusMessage"] = "statusMessage";
-})(ContextElements = exports.ContextElements || (exports.ContextElements = {}));
 const toUpperSnakeCase = (str) => {
     return (str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g) || [])
         .map(x => x.toUpperCase())
@@ -10318,6 +10307,33 @@ module.exports = function bind(fn, thisArg) {
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
+
+
+/***/ }),
+
+/***/ 733:
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var ContextElements;
+(function (ContextElements) {
+    ContextElements["slackToken"] = "slackToken";
+    ContextElements["conversationId"] = "conversationId";
+    ContextElements["appName"] = "appName";
+    ContextElements["envName"] = "envName";
+    ContextElements["refName"] = "refName";
+    ContextElements["messageId"] = "messageId";
+    ContextElements["status"] = "status";
+    ContextElements["statusMessage"] = "statusMessage";
+})(ContextElements = exports.ContextElements || (exports.ContextElements = {}));
+var Status;
+(function (Status) {
+    Status["started"] = "";
+    Status["success"] = "success";
+    Status["failed"] = "failed";
+})(Status = exports.Status || (exports.Status = {}));
 
 
 /***/ }),

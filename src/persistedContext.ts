@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import {ContextElements} from './interfaces'
 
 export class PersistedContext {
   slackToken: string = ''
@@ -50,17 +51,6 @@ export class PersistedContext {
   setEnvVarForProperty(varName: ContextElements, value: string): void {
     core.exportVariable(this.getEnvVarForProperty(varName), value)
   }
-}
-
-export enum ContextElements {
-  slackToken = 'slackToken',
-  conversationId = 'conversationId',
-  appName = 'appName',
-  envName = 'envName',
-  refName = 'refName',
-  messageId = 'messageId',
-  status = 'status',
-  statusMessage = 'statusMessage'
 }
 
 const toUpperSnakeCase = (str: string): string => {

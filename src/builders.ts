@@ -1,4 +1,4 @@
-import {ChatMessage} from './interfaces'
+import {ChatMessage, Status} from './interfaces'
 import {
   //ActionsBlock,
   ContextBlock,
@@ -11,28 +11,28 @@ import moment from 'moment-timezone'
 import {PersistedContext} from './persistedContext'
 
 export function assetUrlFor(context: PersistedContext): string {
-  if (context.status === 'success') {
+  if (context.status === Status.success) {
     return 'https://user-images.githubusercontent.com/35408/78554389-a54f5780-783d-11ea-9657-15dc61ca8262.png'
-  } else if (context.status === 'failure') {
+  } else if (context.status === Status.failed) {
     return 'https://user-images.githubusercontent.com/35408/78554400-a8e2de80-783d-11ea-9f81-17fa426370b5.png'
-  } else if (isInitialDeployment(context)) {
+  } else if (context.status === Status.started) {
     return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png'
   } else {
-    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+    return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif'
   }
 }
 
 export function statusMessageFor(context: PersistedContext): string {
   if (context.statusMessage.length > 0) {
     return context.statusMessage
-  } else if (isInitialDeployment(context)) {
+  } else if (context.status === Status.started) {
     return 'deploying...'
   } else {
     return `${context.status} `
   }
 }
 
-export function titleMessageFor(context: {conversationId: string; envName: string; appName: string; slackToken: string; statusMessage: string; status: string}): string {
+export function titleMessageFor(context: PersistedContext): string {
   if (context.envName.length > 0) {
     return `*${context.envName}* deployment for ${context.appName}`
   } else {
@@ -41,11 +41,11 @@ export function titleMessageFor(context: {conversationId: string; envName: strin
 }
 
 export function contextMessageFor(context: PersistedContext): string {
-  if (isInitialDeployment(context)) {
+  if (context.status === Status.started) {
     return `Started at ${formattedTime()}`
-  } else if (context.status === 'success') {
+  } else if (context.status === Status.success) {
     return `:thumbsup: Completed at ${formattedTime()}`
-  } else if (context.status === 'failed') {
+  } else if (context.status === Status.failed) {
     return `:exclamation: Failed at ${formattedTime()}`
   } else {
     return `${context.status} `
@@ -58,10 +58,6 @@ function formattedTime(): string {
     .format('HH:mm:ss Z')
 }
 
-function isInitialDeployment(context: PersistedContext): boolean {
-  return context.status.length <= 0
-}
-
 export function buildMessage(context: PersistedContext): ChatMessage {
   const fields: (PlainTextElement | MrkdwnElement)[] = [
     {type: 'mrkdwn', text: '*Application*'},
@@ -71,7 +67,7 @@ export function buildMessage(context: PersistedContext): ChatMessage {
     {type: 'plain_text', text: ' '},
     {type: 'plain_text', text: ' '}
   ]
-  if (context.refName !== undefined && context.refName.length > 0) {
+  if (context.refName.length > 0) {
     fields.push(
       {type: 'mrkdwn', text: '*Reference*'},
       {type: 'mrkdwn', text: '*Status*'}

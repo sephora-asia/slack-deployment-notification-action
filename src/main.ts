@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import {WebClient} from '@slack/web-api'
-import {ChatPostMessageResult} from './interfaces'
+import {ChatPostMessageResult, ContextElements} from './interfaces'
 import {buildMessage} from './builders'
-import {PersistedContext, ContextElements} from './persistedContext'
+import {PersistedContext} from './persistedContext'
 
 async function run(): Promise<void> {
   try {
