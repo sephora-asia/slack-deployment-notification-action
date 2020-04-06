@@ -16,7 +16,7 @@ export function assetUrlFor(context: PersistedContext): string {
   } else if (context.status === Status.failed) {
     return 'https://user-images.githubusercontent.com/35408/78554400-a8e2de80-783d-11ea-9f81-17fa426370b5.png'
   } else if (context.status === Status.started) {
-    return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png'
+    return 'https://user-images.githubusercontent.com/35408/78568374-9922c480-7854-11ea-81b5-3ffb9d99efd6.png'
   } else {
     return 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif'
   }
