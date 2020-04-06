@@ -52,6 +52,10 @@ export function contextMessageFor(context: PersistedContext): string {
   }
 }
 
+export function formattedRefFor(context: PersistedContext): string {
+  return `${context.refName.replace(new RegExp('^refs/heads/'), '')} `
+}
+
 function formattedTime(): string {
   return moment()
     .tz('Asia/Singapore')
@@ -62,8 +66,8 @@ export function buildMessage(context: PersistedContext): ChatMessage {
   const fields: (PlainTextElement | MrkdwnElement)[] = [
     {type: 'mrkdwn', text: '*Application*'},
     {type: 'mrkdwn', text: '*Environment*'},
-    {type: 'plain_text', text: `${context.appName} `},
-    {type: 'plain_text', text: `${context.envName} `},
+    {type: 'mrkdwn', text: `_${context.appName}_`},
+    {type: 'mrkdwn', text: `_${context.envName}_`},
     {type: 'plain_text', text: ' '},
     {type: 'plain_text', text: ' '}
   ]
@@ -73,7 +77,7 @@ export function buildMessage(context: PersistedContext): ChatMessage {
       {type: 'mrkdwn', text: '*Status*'}
     )
     fields.push(
-      {type: 'plain_text', text: `${context.refName}`},
+      {type: 'plain_text', text: formattedRefFor(context)},
       {type: 'plain_text', text: statusMessageFor(context)}
     )
   }

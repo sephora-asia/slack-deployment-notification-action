@@ -23,7 +23,7 @@ jobs:
       with:
         slackToken: ${{ secrets.SLACK_TOKEN }}
         conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
-        appName: 'Slack Deployment Notifcation Actions'
+        appName: 'Slack Deployment Notification Actions'
         envName: 'testing'
         refName: ${{ github.ref }}
         statusMessage: 'deploying... :loading:'
