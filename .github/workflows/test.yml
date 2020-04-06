@@ -26,11 +26,11 @@ jobs:
         appName: 'Slack Deployment Notifcation Actions'
         envName: 'testing'
         refName: ${{ github.ref }}
-        statusMessage: 'Deploying... :loading:'
+        statusMessage: 'deploying... :loading:'
     - run: sleep 10
     - uses: ./
       with:
-        status: 'success
+        status: 'success'
         statusMessage: 'success :checkered_flag:'
     - run: sleep 10
     - uses: ./
