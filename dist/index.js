@@ -2685,7 +2685,65 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_timezone_1 = __importDefault(__webpack_require__(717));
-//const assetUrlPrefix = `https://raw.githubusercontent.com/FortAwesome/Font-Awesome/master/svgs`
+function assetUrlFor(opts) {
+    if (opts.status === 'success') {
+        return 'https://user-images.githubusercontent.com/35408/78554389-a54f5780-783d-11ea-9657-15dc61ca8262.png';
+    }
+    else if (opts.status === 'failure') {
+        return 'https://user-images.githubusercontent.com/35408/78554400-a8e2de80-783d-11ea-9f81-17fa426370b5.png';
+    }
+    else if (isInitialDeployment(opts)) {
+        return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png';
+    }
+    else {
+        return '';
+    }
+}
+exports.assetUrlFor = assetUrlFor;
+function statusMessageFor(opts) {
+    if (opts.statusMessage !== undefined && opts.statusMessage.length > 0) {
+        return opts.statusMessage;
+    }
+    else if (isInitialDeployment(opts)) {
+        return 'deploying...';
+    }
+    else {
+        return opts.status || '';
+    }
+}
+exports.statusMessageFor = statusMessageFor;
+function titleMessageFor(opts) {
+    if (opts.envName !== undefined && opts.envName.length > 0) {
+        return `Starting *${opts.envName}* deployment for ${opts.appName}`;
+    }
+    else {
+        return `Starting deployment for ${opts.appName}`;
+    }
+}
+exports.titleMessageFor = titleMessageFor;
+function contextMessageFor(opts) {
+    if (isInitialDeployment(opts)) {
+        return `Started at ${formattedTime()}`;
+    }
+    else if (opts.status === 'success') {
+        return `:thumbsup: Completed at ${formattedTime()}`;
+    }
+    else if (opts.status === 'failed') {
+        return `:exclamation: Failed at ${formattedTime()}`;
+    }
+    else {
+        return '';
+    }
+}
+exports.contextMessageFor = contextMessageFor;
+function formattedTime() {
+    return moment_timezone_1.default()
+        .tz('Asia/Singapore')
+        .format('HH:mm:ss Z');
+}
+function isInitialDeployment(opts) {
+    return opts.status === undefined || opts.status.length <= 0;
+}
 function buildMessage(opts) {
     const fields = [
         { type: 'mrkdwn', text: '*Application*' },
@@ -2697,19 +2755,19 @@ function buildMessage(opts) {
     ];
     if (opts.refName !== undefined && opts.refName.length > 0) {
         fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: '*Status*' });
-        fields.push({ type: 'plain_text', text: opts.refName }, { type: 'plain_text', text: statusMessage(opts) });
+        fields.push({ type: 'plain_text', text: opts.refName }, { type: 'plain_text', text: statusMessageFor(opts) });
     }
     const titleSection = {
         type: 'section',
-        text: { type: 'mrkdwn', text: titleMessage(opts) },
-        fields
-        // accessory: {
-        //   type: 'image',
-        //   // eslint-disable-next-line @typescript-eslint/camelcase
-        //   image_url: `${assetUrlPrefix}/solid/play-circle.svg`,
-        //   // eslint-disable-next-line @typescript-eslint/camelcase
-        //   alt_text: 'Starting'
-        // }
+        text: { type: 'mrkdwn', text: titleMessageFor(opts) },
+        fields,
+        accessory: {
+            type: 'image',
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            image_url: assetUrlFor(opts),
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            alt_text: 'Starting'
+        }
     };
     const dividerSection = {
         type: 'divider'
@@ -2734,7 +2792,7 @@ function buildMessage(opts) {
         elements: [
             {
                 type: 'mrkdwn',
-                text: contextMessage(opts)
+                text: contextMessageFor(opts)
             }
         ]
     };
@@ -2744,50 +2802,6 @@ function buildMessage(opts) {
     return message;
 }
 exports.buildMessage = buildMessage;
-function statusMessage(opts) {
-    if (opts.statusMessage !== undefined && opts.statusMessage.length > 0) {
-        return opts.statusMessage;
-    }
-    else if (opts.status === undefined || opts.status.length <= 0) {
-        return 'deploying...';
-    }
-    else {
-        return opts.status;
-    }
-}
-exports.statusMessage = statusMessage;
-function titleMessage(opts) {
-    if (opts.envName !== undefined && opts.envName.length > 0) {
-        return `Starting *${opts.envName}* deployment for ${opts.appName}`;
-    }
-    else {
-        return `Starting deployment for ${opts.appName}`;
-    }
-}
-exports.titleMessage = titleMessage;
-function contextMessage(opts) {
-    if (initialDeployment(opts)) {
-        return `Started at ${formattedTime()}`;
-    }
-    else if (opts.status === 'success') {
-        return `:thumbsup: Completed at ${formattedTime()}`;
-    }
-    else if (opts.status === 'failed') {
-        return `:exclamation: Failed at ${formattedTime()}`;
-    }
-    else {
-        return '';
-    }
-}
-exports.contextMessage = contextMessage;
-function formattedTime() {
-    return moment_timezone_1.default()
-        .tz('Asia/Singapore')
-        .format('HH:mm:ss Z');
-}
-function initialDeployment(opts) {
-    return (opts.status === undefined || opts.status.length <= 0);
-}
 
 
 /***/ }),

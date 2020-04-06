@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="496px" height="496px" viewBox="0 0 496 496" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>exclamation-circle</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="exclamation-circle" fill="#EE0000" fill-rule="nonzero">
+            <path d="M496,248 C496,384.997 384.957,496 248,496 C111.043,496 0,384.997 0,248 C0,111.083 111.043,0 248,0 C384.957,0 496,111.083 496,248 Z M248,298 C222.595,298 202,318.595 202,344 C202,369.405 222.595,390 248,390 C273.405,390 294,369.405 294,344 C294,318.595 273.405,298 248,298 Z M204.327,132.654 L211.745,268.654 C212.092,275.018 217.354,280 223.727,280 L272.273,280 C278.646,280 283.908,275.018 284.255,268.654 L291.673,132.654 C292.048,125.78 286.575,120 279.691,120 L216.308,120 C209.424,120 203.952,125.78 204.327,132.654 L204.327,132.654 Z" id="Shape"></path>
+        </g>
+    </g>
+</svg>
