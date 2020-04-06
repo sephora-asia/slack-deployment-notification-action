@@ -28,17 +28,24 @@ export class PersistedContext {
     persist: boolean = true,
     secret: boolean = false
   ): void {
-    if (core.getInput(varName).length > 0) {
+    if (
+      core.getInput(varName) !== undefined &&
+      core.getInput(varName).length > 0
+    ) {
       this[varName] = core.getInput(varName)
     } else {
-      this[varName] = process.env[toUpperSnakeCase(varName)] as string
+      this[varName] = process.env[this.getEnvVarForProperty(varName)] as string
     }
     if (secret) {
       core.setSecret(this[varName])
     }
     if (persist) {
-      core.exportVariable(toUpperSnakeCase(varName), this[varName])
+      core.exportVariable(this.getEnvVarForProperty(varName), this[varName])
     }
+  }
+
+  getEnvVarForProperty(varName: ContextElements): string {
+    return `DEP_NOTIF_${toUpperSnakeCase(varName)}`
   }
 }
 

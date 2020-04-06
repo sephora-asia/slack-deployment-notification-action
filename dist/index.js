@@ -2891,18 +2891,22 @@ class PersistedContext {
         this.getAndSetVarFromContext(ContextElements.statusMessage, false);
     }
     getAndSetVarFromContext(varName, persist = true, secret = false) {
-        if (core.getInput(varName).length > 0) {
+        if (core.getInput(varName) !== undefined &&
+            core.getInput(varName).length > 0) {
             this[varName] = core.getInput(varName);
         }
         else {
-            this[varName] = process.env[toUpperSnakeCase(varName)];
+            this[varName] = process.env[this.getEnvVarForProperty(varName)];
         }
         if (secret) {
             core.setSecret(this[varName]);
         }
         if (persist) {
-            core.exportVariable(toUpperSnakeCase(varName), this[varName]);
+            core.exportVariable(this.getEnvVarForProperty(varName), this[varName]);
         }
+    }
+    getEnvVarForProperty(varName) {
+        return `DEP_NOTIF_${toUpperSnakeCase(varName)}`;
     }
 }
 exports.PersistedContext = PersistedContext;
