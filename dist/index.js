@@ -2684,7 +2684,7 @@ function assetUrlFor(context) {
         return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png';
     }
     else {
-        return '';
+        return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
     }
 }
 exports.assetUrlFor = assetUrlFor;
@@ -2696,16 +2696,16 @@ function statusMessageFor(context) {
         return 'deploying...';
     }
     else {
-        return context.status;
+        return `${context.status} `;
     }
 }
 exports.statusMessageFor = statusMessageFor;
 function titleMessageFor(context) {
     if (context.envName.length > 0) {
-        return `Starting *${context.envName}* deployment for ${context.appName}`;
+        return `*${context.envName}* deployment for ${context.appName}`;
     }
     else {
-        return `Starting deployment for ${context.appName}`;
+        return `Deployment for ${context.appName}`;
     }
 }
 exports.titleMessageFor = titleMessageFor;
@@ -2720,7 +2720,7 @@ function contextMessageFor(context) {
         return `:exclamation: Failed at ${formattedTime()}`;
     }
     else {
-        return context.status;
+        return `${context.status} `;
     }
 }
 exports.contextMessageFor = contextMessageFor;
@@ -2736,14 +2736,14 @@ function buildMessage(context) {
     const fields = [
         { type: 'mrkdwn', text: '*Application*' },
         { type: 'mrkdwn', text: '*Environment*' },
-        { type: 'plain_text', text: context.appName },
+        { type: 'plain_text', text: `${context.appName} ` },
         { type: 'plain_text', text: `${context.envName} ` },
         { type: 'plain_text', text: ' ' },
         { type: 'plain_text', text: ' ' }
     ];
     if (context.refName !== undefined && context.refName.length > 0) {
         fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: '*Status*' });
-        fields.push({ type: 'plain_text', text: context.refName }, { type: 'plain_text', text: statusMessageFor(context) });
+        fields.push({ type: 'plain_text', text: `${context.refName}` }, { type: 'plain_text', text: statusMessageFor(context) });
     }
     const titleSection = {
         type: 'section',
@@ -2754,7 +2754,7 @@ function buildMessage(context) {
             // eslint-disable-next-line @typescript-eslint/camelcase
             image_url: assetUrlFor(context),
             // eslint-disable-next-line @typescript-eslint/camelcase
-            alt_text: 'Starting'
+            alt_text: `${context.status} `
         }
     };
     const dividerSection = {

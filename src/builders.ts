@@ -18,7 +18,7 @@ export function assetUrlFor(context: PersistedContext): string {
   } else if (isInitialDeployment(context)) {
     return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png'
   } else {
-    return ''
+    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
   }
 }
 
@@ -28,15 +28,15 @@ export function statusMessageFor(context: PersistedContext): string {
   } else if (isInitialDeployment(context)) {
     return 'deploying...'
   } else {
-    return context.status
+    return `${context.status} `
   }
 }
 
-export function titleMessageFor(context: PersistedContext): string {
+export function titleMessageFor(context: {conversationId: string; envName: string; appName: string; slackToken: string; statusMessage: string; status: string}): string {
   if (context.envName.length > 0) {
-    return `Starting *${context.envName}* deployment for ${context.appName}`
+    return `*${context.envName}* deployment for ${context.appName}`
   } else {
-    return `Starting deployment for ${context.appName}`
+    return `Deployment for ${context.appName}`
   }
 }
 
@@ -48,7 +48,7 @@ export function contextMessageFor(context: PersistedContext): string {
   } else if (context.status === 'failed') {
     return `:exclamation: Failed at ${formattedTime()}`
   } else {
-    return context.status
+    return `${context.status} `
   }
 }
 
@@ -66,7 +66,7 @@ export function buildMessage(context: PersistedContext): ChatMessage {
   const fields: (PlainTextElement | MrkdwnElement)[] = [
     {type: 'mrkdwn', text: '*Application*'},
     {type: 'mrkdwn', text: '*Environment*'},
-    {type: 'plain_text', text: context.appName},
+    {type: 'plain_text', text: `${context.appName} `},
     {type: 'plain_text', text: `${context.envName} `},
     {type: 'plain_text', text: ' '},
     {type: 'plain_text', text: ' '}
@@ -77,7 +77,7 @@ export function buildMessage(context: PersistedContext): ChatMessage {
       {type: 'mrkdwn', text: '*Status*'}
     )
     fields.push(
-      {type: 'plain_text', text: context.refName},
+      {type: 'plain_text', text: `${context.refName}`},
       {type: 'plain_text', text: statusMessageFor(context)}
     )
   }
@@ -91,7 +91,7 @@ export function buildMessage(context: PersistedContext): ChatMessage {
       // eslint-disable-next-line @typescript-eslint/camelcase
       image_url: assetUrlFor(context),
       // eslint-disable-next-line @typescript-eslint/camelcase
-      alt_text: 'Starting'
+      alt_text: `${context.status} `
     }
   }
   const dividerSection: DividerBlock = {

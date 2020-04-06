@@ -1,10 +1,10 @@
-import {titleForDeployment} from '../src/builders'
+import {titleMessageFor} from '../src/builders'
 
-describe('titleForDeployment', () => {
+describe('titleMessageFor', () => {
   describe('with environment', () =>{
     it('Returns a full deployment string', async () => {
-      expect(titleForDeployment({envName: 'production', appName: 'test'})).
-        toEqual('Starting *production* deployment for test')
+      expect(titleMessageFor({slackToken: '', conversationId: '', envName: 'production', appName: 'test', status: '', statusMessage: ''})).
+        toEqual('*production* deployment for test')
     })
   })
 })
