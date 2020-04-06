@@ -1,4 +1,4 @@
-import {ChatMessage, DeploymentOpts} from './interfaces'
+import {ChatMessage} from './interfaces'
 import {
   //ActionsBlock,
   ContextBlock,
@@ -8,46 +8,47 @@ import {
   SectionBlock
 } from '@slack/types'
 import moment from 'moment-timezone'
+import {PersistedContext} from './persistedContext'
 
-export function assetUrlFor(opts: DeploymentOpts): string {
-  if (opts.status === 'success') {
+export function assetUrlFor(context: PersistedContext): string {
+  if (context.status === 'success') {
     return 'https://user-images.githubusercontent.com/35408/78554389-a54f5780-783d-11ea-9657-15dc61ca8262.png'
-  } else if (opts.status === 'failure') {
+  } else if (context.status === 'failure') {
     return 'https://user-images.githubusercontent.com/35408/78554400-a8e2de80-783d-11ea-9f81-17fa426370b5.png'
-  } else if (isInitialDeployment(opts)) {
+  } else if (isInitialDeployment(context)) {
     return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png'
   } else {
     return ''
   }
 }
 
-export function statusMessageFor(opts: DeploymentOpts): string {
-  if (opts.statusMessage !== undefined && opts.statusMessage.length > 0) {
-    return opts.statusMessage
-  } else if (isInitialDeployment(opts)) {
+export function statusMessageFor(context: PersistedContext): string {
+  if (context.statusMessage.length > 0) {
+    return context.statusMessage
+  } else if (isInitialDeployment(context)) {
     return 'deploying...'
   } else {
-    return opts.status || ''
+    return context.status
   }
 }
 
-export function titleMessageFor(opts: DeploymentOpts): string {
-  if (opts.envName !== undefined && opts.envName.length > 0) {
-    return `Starting *${opts.envName}* deployment for ${opts.appName}`
+export function titleMessageFor(context: PersistedContext): string {
+  if (context.envName.length > 0) {
+    return `Starting *${context.envName}* deployment for ${context.appName}`
   } else {
-    return `Starting deployment for ${opts.appName}`
+    return `Starting deployment for ${context.appName}`
   }
 }
 
-export function contextMessageFor(opts: DeploymentOpts): string {
-  if (isInitialDeployment(opts)) {
+export function contextMessageFor(context: PersistedContext): string {
+  if (isInitialDeployment(context)) {
     return `Started at ${formattedTime()}`
-  } else if (opts.status === 'success') {
+  } else if (context.status === 'success') {
     return `:thumbsup: Completed at ${formattedTime()}`
-  } else if (opts.status === 'failed') {
+  } else if (context.status === 'failed') {
     return `:exclamation: Failed at ${formattedTime()}`
   } else {
-    return ''
+    return context.status
   }
 }
 
@@ -57,38 +58,38 @@ function formattedTime(): string {
     .format('HH:mm:ss Z')
 }
 
-function isInitialDeployment(opts: DeploymentOpts): boolean {
-  return opts.status === undefined || opts.status.length <= 0
+function isInitialDeployment(context: PersistedContext): boolean {
+  return context.status.length <= 0
 }
 
-export function buildMessage(opts: DeploymentOpts): ChatMessage {
+export function buildMessage(context: PersistedContext): ChatMessage {
   const fields: (PlainTextElement | MrkdwnElement)[] = [
     {type: 'mrkdwn', text: '*Application*'},
     {type: 'mrkdwn', text: '*Environment*'},
-    {type: 'plain_text', text: opts.appName},
-    {type: 'plain_text', text: `${opts.envName} `},
+    {type: 'plain_text', text: context.appName},
+    {type: 'plain_text', text: `${context.envName} `},
     {type: 'plain_text', text: ' '},
     {type: 'plain_text', text: ' '}
   ]
-  if (opts.refName !== undefined && opts.refName.length > 0) {
+  if (context.refName !== undefined && context.refName.length > 0) {
     fields.push(
       {type: 'mrkdwn', text: '*Reference*'},
       {type: 'mrkdwn', text: '*Status*'}
     )
     fields.push(
-      {type: 'plain_text', text: opts.refName},
-      {type: 'plain_text', text: statusMessageFor(opts)}
+      {type: 'plain_text', text: context.refName},
+      {type: 'plain_text', text: statusMessageFor(context)}
     )
   }
 
   const titleSection: SectionBlock = {
     type: 'section',
-    text: {type: 'mrkdwn', text: titleMessageFor(opts)},
+    text: {type: 'mrkdwn', text: titleMessageFor(context)},
     fields,
     accessory: {
       type: 'image',
       // eslint-disable-next-line @typescript-eslint/camelcase
-      image_url: assetUrlFor(opts),
+      image_url: assetUrlFor(context),
       // eslint-disable-next-line @typescript-eslint/camelcase
       alt_text: 'Starting'
     }
@@ -116,7 +117,7 @@ export function buildMessage(opts: DeploymentOpts): ChatMessage {
     elements: [
       {
         type: 'mrkdwn',
-        text: contextMessageFor(opts)
+        text: contextMessageFor(context)
       }
     ]
   }

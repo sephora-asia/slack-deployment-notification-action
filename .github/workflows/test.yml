@@ -30,20 +30,8 @@ jobs:
     - run: sleep 10
     - uses: ./
       with:
-        slackToken: ${{ secrets.SLACK_TOKEN }}
-        conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
-        messageId: ${{ steps.start-deploy-notif.outputs.messageId }}
-        appName: 'Slack Deployment Notifcation Actions'
-        envName: 'testing'
-        refName: ${{ github.ref }}
         statusUpdate: 'success :checkered_flag:'
     - run: sleep 10
     - uses: ./
       with:
-        slackToken: ${{ secrets.SLACK_TOKEN }}
-        conversationId: ${{ secrets.SLACK_TEST_CONVERSATION_ID }}
-        messageId: ${{ steps.start-deploy-notif.outputs.messageId }}
-        appName: 'Slack Deployment Notifcation Actions'
-        envName: 'testing'
-        refName: ${{ github.ref }}
         statusUpdate: 'failed :boom:'

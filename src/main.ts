@@ -2,46 +2,32 @@ import * as core from '@actions/core'
 import {WebClient} from '@slack/web-api'
 import {ChatPostMessageResult} from './interfaces'
 import {buildMessage} from './builders'
+import {PersistedContext} from './persistedContext'
 
 async function run(): Promise<void> {
   try {
-    // Get the slack token as input and initialise the client
-    const slackToken = core.getInput('slackToken')
-    core.setSecret(slackToken)
-    const slackClient: WebClient = new WebClient(slackToken),
-      conversationId = core.getInput('conversationId'),
-      appName = core.getInput('appName'),
-      envName = core.getInput('envName'),
-      refName = core.getInput('refName'),
-      messageId = core.getInput('messageId'),
-      status = core.getInput('statusUpdate'),
-      statusMessage = core.getInput('statusMessage'),
-      deploymentOpts = {
-        appName,
-        envName,
-        refName,
-        messageId,
-        status,
-        statusMessage
-      }
+    const context = new PersistedContext()
 
-    const message = buildMessage(deploymentOpts)
+    const slackClient: WebClient = new WebClient(context.slackToken)
+
+    const message = buildMessage(context)
+    const baseOptions = {
+      channel: context.conversationId,
+      text: '',
+      blocks: message.blocks
+    }
 
     let result: ChatPostMessageResult | undefined
-    if (messageId !== undefined && messageId.length > 0) {
+    if (context.messageId.length > 0) {
       result = (await slackClient.chat.update({
-        channel: conversationId,
+        ...baseOptions,
         // eslint-disable-next-line @typescript-eslint/camelcase
         as_user: true,
-        ts: messageId,
-        text: '',
-        blocks: message.blocks
+        ts: context.messageId
       })) as ChatPostMessageResult
     } else {
       result = (await slackClient.chat.postMessage({
-        channel: conversationId,
-        text: '',
-        blocks: message.blocks
+        ...baseOptions
       })) as ChatPostMessageResult
     }
 

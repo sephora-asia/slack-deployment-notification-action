@@ -1356,38 +1356,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const web_api_1 = __webpack_require__(114);
 const builders_1 = __webpack_require__(266);
+const persistedContext_1 = __webpack_require__(296);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Get the slack token as input and initialise the client
-            const slackToken = core.getInput('slackToken');
-            core.setSecret(slackToken);
-            const slackClient = new web_api_1.WebClient(slackToken), conversationId = core.getInput('conversationId'), appName = core.getInput('appName'), envName = core.getInput('envName'), refName = core.getInput('refName'), messageId = core.getInput('messageId'), status = core.getInput('statusUpdate'), statusMessage = core.getInput('statusMessage'), deploymentOpts = {
-                appName,
-                envName,
-                refName,
-                messageId,
-                status,
-                statusMessage
+            const context = new persistedContext_1.PersistedContext();
+            const slackClient = new web_api_1.WebClient(context.slackToken);
+            const message = builders_1.buildMessage(context);
+            const baseOptions = {
+                channel: context.conversationId,
+                text: '',
+                blocks: message.blocks
             };
-            const message = builders_1.buildMessage(deploymentOpts);
             let result;
-            if (messageId !== undefined && messageId.length > 0) {
-                result = (yield slackClient.chat.update({
-                    channel: conversationId,
+            if (context.messageId.length > 0) {
+                result = (yield slackClient.chat.update(Object.assign(Object.assign({}, baseOptions), { 
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    as_user: true,
-                    ts: messageId,
-                    text: '',
-                    blocks: message.blocks
-                }));
+                    as_user: true, ts: context.messageId })));
             }
             else {
-                result = (yield slackClient.chat.postMessage({
-                    channel: conversationId,
-                    text: '',
-                    blocks: message.blocks
-                }));
+                result = (yield slackClient.chat.postMessage(Object.assign({}, baseOptions)));
             }
             core.setOutput('messageId', result.ts);
         }
@@ -2685,14 +2673,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const moment_timezone_1 = __importDefault(__webpack_require__(717));
-function assetUrlFor(opts) {
-    if (opts.status === 'success') {
+function assetUrlFor(context) {
+    if (context.status === 'success') {
         return 'https://user-images.githubusercontent.com/35408/78554389-a54f5780-783d-11ea-9657-15dc61ca8262.png';
     }
-    else if (opts.status === 'failure') {
+    else if (context.status === 'failure') {
         return 'https://user-images.githubusercontent.com/35408/78554400-a8e2de80-783d-11ea-9f81-17fa426370b5.png';
     }
-    else if (isInitialDeployment(opts)) {
+    else if (isInitialDeployment(context)) {
         return 'https://user-images.githubusercontent.com/35408/78554376-a1233a00-783d-11ea-9641-221d29862846.png';
     }
     else {
@@ -2700,39 +2688,39 @@ function assetUrlFor(opts) {
     }
 }
 exports.assetUrlFor = assetUrlFor;
-function statusMessageFor(opts) {
-    if (opts.statusMessage !== undefined && opts.statusMessage.length > 0) {
-        return opts.statusMessage;
+function statusMessageFor(context) {
+    if (context.statusMessage.length > 0) {
+        return context.statusMessage;
     }
-    else if (isInitialDeployment(opts)) {
+    else if (isInitialDeployment(context)) {
         return 'deploying...';
     }
     else {
-        return opts.status || '';
+        return context.status;
     }
 }
 exports.statusMessageFor = statusMessageFor;
-function titleMessageFor(opts) {
-    if (opts.envName !== undefined && opts.envName.length > 0) {
-        return `Starting *${opts.envName}* deployment for ${opts.appName}`;
+function titleMessageFor(context) {
+    if (context.envName.length > 0) {
+        return `Starting *${context.envName}* deployment for ${context.appName}`;
     }
     else {
-        return `Starting deployment for ${opts.appName}`;
+        return `Starting deployment for ${context.appName}`;
     }
 }
 exports.titleMessageFor = titleMessageFor;
-function contextMessageFor(opts) {
-    if (isInitialDeployment(opts)) {
+function contextMessageFor(context) {
+    if (isInitialDeployment(context)) {
         return `Started at ${formattedTime()}`;
     }
-    else if (opts.status === 'success') {
+    else if (context.status === 'success') {
         return `:thumbsup: Completed at ${formattedTime()}`;
     }
-    else if (opts.status === 'failed') {
+    else if (context.status === 'failed') {
         return `:exclamation: Failed at ${formattedTime()}`;
     }
     else {
-        return '';
+        return context.status;
     }
 }
 exports.contextMessageFor = contextMessageFor;
@@ -2741,30 +2729,30 @@ function formattedTime() {
         .tz('Asia/Singapore')
         .format('HH:mm:ss Z');
 }
-function isInitialDeployment(opts) {
-    return opts.status === undefined || opts.status.length <= 0;
+function isInitialDeployment(context) {
+    return context.status.length <= 0;
 }
-function buildMessage(opts) {
+function buildMessage(context) {
     const fields = [
         { type: 'mrkdwn', text: '*Application*' },
         { type: 'mrkdwn', text: '*Environment*' },
-        { type: 'plain_text', text: opts.appName },
-        { type: 'plain_text', text: `${opts.envName} ` },
+        { type: 'plain_text', text: context.appName },
+        { type: 'plain_text', text: `${context.envName} ` },
         { type: 'plain_text', text: ' ' },
         { type: 'plain_text', text: ' ' }
     ];
-    if (opts.refName !== undefined && opts.refName.length > 0) {
+    if (context.refName !== undefined && context.refName.length > 0) {
         fields.push({ type: 'mrkdwn', text: '*Reference*' }, { type: 'mrkdwn', text: '*Status*' });
-        fields.push({ type: 'plain_text', text: opts.refName }, { type: 'plain_text', text: statusMessageFor(opts) });
+        fields.push({ type: 'plain_text', text: context.refName }, { type: 'plain_text', text: statusMessageFor(context) });
     }
     const titleSection = {
         type: 'section',
-        text: { type: 'mrkdwn', text: titleMessageFor(opts) },
+        text: { type: 'mrkdwn', text: titleMessageFor(context) },
         fields,
         accessory: {
             type: 'image',
             // eslint-disable-next-line @typescript-eslint/camelcase
-            image_url: assetUrlFor(opts),
+            image_url: assetUrlFor(context),
             // eslint-disable-next-line @typescript-eslint/camelcase
             alt_text: 'Starting'
         }
@@ -2792,7 +2780,7 @@ function buildMessage(opts) {
         elements: [
             {
                 type: 'mrkdwn',
-                text: contextMessageFor(opts)
+                text: contextMessageFor(context)
             }
         ]
     };
@@ -2862,6 +2850,78 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 };
 
 module.exports = InterceptorManager;
+
+
+/***/ }),
+
+/***/ 296:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+class PersistedContext {
+    /**
+     * Hydrate the context from the environment
+     */
+    constructor() {
+        this.slackToken = '';
+        this.conversationId = '';
+        this.appName = '';
+        this.envName = '';
+        this.refName = '';
+        this.messageId = '';
+        this.status = '';
+        this.statusMessage = '';
+        this.getAndSetVarFromContext(ContextElements.slackToken, true, true);
+        this.getAndSetVarFromContext(ContextElements.conversationId);
+        this.getAndSetVarFromContext(ContextElements.appName);
+        this.getAndSetVarFromContext(ContextElements.envName);
+        this.getAndSetVarFromContext(ContextElements.refName);
+        this.getAndSetVarFromContext(ContextElements.messageId);
+        this.getAndSetVarFromContext(ContextElements.status, false);
+        this.getAndSetVarFromContext(ContextElements.statusMessage, false);
+    }
+    getAndSetVarFromContext(varName, persist = true, secret = false) {
+        if (core.getInput(varName).length > 0) {
+            this[varName] = core.getInput(varName);
+        }
+        else {
+            this[varName] = process.env[toUpperSnakeCase(varName)];
+        }
+        if (secret) {
+            core.setSecret(this[varName]);
+        }
+        if (persist) {
+            core.exportVariable(toUpperSnakeCase(varName), this[varName]);
+        }
+    }
+}
+exports.PersistedContext = PersistedContext;
+var ContextElements;
+(function (ContextElements) {
+    ContextElements["slackToken"] = "slackToken";
+    ContextElements["conversationId"] = "conversationId";
+    ContextElements["appName"] = "appName";
+    ContextElements["envName"] = "envName";
+    ContextElements["refName"] = "refName";
+    ContextElements["messageId"] = "messageId";
+    ContextElements["status"] = "status";
+    ContextElements["statusMessage"] = "statusMessage";
+})(ContextElements || (ContextElements = {}));
+const toUpperSnakeCase = (str) => {
+    return (str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g) || [])
+        .map(x => x.toUpperCase())
+        .join('_');
+};
 
 
 /***/ }),

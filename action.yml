@@ -4,13 +4,13 @@ author: 'Sephora Asia'
 inputs:
   slackToken:
     description: 'Slack API token of the bot to use'
-    required: true
+    required: false
   conversationId:
     description: 'Channel or conversation ID to post your message to'
-    required: true
+    required: false
   appName:
     description: 'Name of the application you are deploying'
-    required: true
+    required: false
     default: 'Application'
   envName:
     description: '(optional) Environment name you are deploying to'
