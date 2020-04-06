@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import {WebClient} from '@slack/web-api'
 import {ChatPostMessageResult} from './interfaces'
 import {buildMessage} from './builders'
-import {PersistedContext} from './persistedContext'
+import {PersistedContext, ContextElements} from './persistedContext'
 
 async function run(): Promise<void> {
   try {
@@ -30,7 +30,7 @@ async function run(): Promise<void> {
         ...baseOptions
       })) as ChatPostMessageResult
     }
-
+    context.setEnvVarForProperty(ContextElements.messageId, result.ts)
     core.setOutput('messageId', result.ts)
   } catch (error) {
     core.setFailed(error.message)

@@ -1377,6 +1377,7 @@ function run() {
             else {
                 result = (yield slackClient.chat.postMessage(Object.assign({}, baseOptions)));
             }
+            context.setEnvVarForProperty(persistedContext_1.ContextElements.messageId, result.ts);
             core.setOutput('messageId', result.ts);
         }
         catch (error) {
@@ -2902,12 +2903,15 @@ class PersistedContext {
                 core.setSecret(this[varName]);
             }
             if (persist) {
-                core.exportVariable(this.getEnvVarForProperty(varName), this[varName]);
+                this.setEnvVarForProperty(varName, this[varName]);
             }
         }
     }
     getEnvVarForProperty(varName) {
         return `DEP_NOTIF_${toUpperSnakeCase(varName)}`;
+    }
+    setEnvVarForProperty(varName, value) {
+        core.exportVariable(this.getEnvVarForProperty(varName), value);
     }
 }
 exports.PersistedContext = PersistedContext;
@@ -2921,7 +2925,7 @@ var ContextElements;
     ContextElements["messageId"] = "messageId";
     ContextElements["status"] = "status";
     ContextElements["statusMessage"] = "statusMessage";
-})(ContextElements || (ContextElements = {}));
+})(ContextElements = exports.ContextElements || (exports.ContextElements = {}));
 const toUpperSnakeCase = (str) => {
     return (str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g) || [])
         .map(x => x.toUpperCase())

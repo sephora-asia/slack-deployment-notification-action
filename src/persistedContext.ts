@@ -38,7 +38,7 @@ export class PersistedContext {
         core.setSecret(this[varName])
       }
       if (persist) {
-        core.exportVariable(this.getEnvVarForProperty(varName), this[varName])
+        this.setEnvVarForProperty(varName, this[varName])
       }
     }
   }
@@ -46,9 +46,13 @@ export class PersistedContext {
   getEnvVarForProperty(varName: ContextElements): string {
     return `DEP_NOTIF_${toUpperSnakeCase(varName)}`
   }
+
+  setEnvVarForProperty(varName: ContextElements, value: string): void {
+    core.exportVariable(this.getEnvVarForProperty(varName), value)
+  }
 }
 
-enum ContextElements {
+export enum ContextElements {
   slackToken = 'slackToken',
   conversationId = 'conversationId',
   appName = 'appName',

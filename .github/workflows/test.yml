@@ -30,8 +30,10 @@ jobs:
     - run: sleep 10
     - uses: ./
       with:
-        statusUpdate: 'success :checkered_flag:'
+        status: 'success
+        statusMessage: 'success :checkered_flag:'
     - run: sleep 10
     - uses: ./
       with:
-        statusUpdate: 'failed :boom:'
+        status: 'failed'
+        statusMessage: 'failed :boom:'

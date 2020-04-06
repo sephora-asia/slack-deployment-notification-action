@@ -21,8 +21,8 @@ inputs:
   messageId:
     description: '(optional) ID of the message to update'
     default: ''
-  statusUpdate:
-    description: "(optional) Pass this value as either 'completed' or 'failed' to update your deployment status"
+  status:
+    description: "(optional) Pass this value as either 'success' or 'failed' to update your deployment status"
     default: ''
   statusMessage:
     description: "(optional) Additional status message to display for a status update"
