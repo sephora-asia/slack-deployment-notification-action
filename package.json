@@ -25,7 +25,7 @@
   "author": "YourNameOrOrganization",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0",
+    "@actions/core": "^1.2.6",
     "@slack/web-api": "^5.8.0",
     "moment-timezone": "^0.5.28"
   },
